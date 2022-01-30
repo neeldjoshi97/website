@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Project Showcase</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>Personal Website</strong> by Neel Joshi</a>
+									<ul class="icons">
+										<li><a href="http://www.linkedin.com/in/neeldjoshi" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+										<!-- <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li> -->
+										<li><a href="https://github.com/neeldjoshi97" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<!-- <li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li> -->
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Projects</h1>
+									</header>
+
+									<span class="image main"><img src="images/project.jpg" alt="" /></span>
+
+									<p>Here are some of the projects I love to share with folks:</p>
+									<!-- <p>[_]</p>
+									<p>[_]</p> -->
+
+									<hr class="major" />
+
+									<h2>Feature Matching in Stereo Images using Quasi Dense Feature Propagation Algorithm</h2>
+									<p>This was implemented as the final project for the class 'Computer Vision for Engineers'.
+										We worked as a team of 4 classmates. We implemented the entire process in parts, each member
+										being responsible for one. The final Python script integrates the individual parts of the
+										process such that the input of multiple 2D images is processed to output 3D point co-ordinates
+										in Polygon File Format which can be imported into any 3D rendering software.</p>
+									<p>In case of many images of an object, it becomes difficult to find perfect (seed/sparse)
+										keypoints (e.g. SIFT, SURF) which are present in all/most of the images at once. My part was
+										concerned about implementing Quasi Dense Matching which uses certain conditions to find out
+										neighbouring points of seed keypoints which can be used for triangulation (estimating correct 3D co-ordinates).</p>
+									<p>Using the standard Baby image, if one finds the SIFT feature matches in the left and the right image
+										(stereo pair) and locate arbitrarily 2 of them like shown (bright red spots):</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/baby_left.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/baby_right.png" alt="" /></span></div>
+										</div>
+									</div>
+									<p>Now after implementing the feature search algorithm, these are all the possible matches one gets with ZNCC threshold of 0.99999:</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/baby_left_matched.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/baby_right_matched.png" alt="" /></span></div>
+										</div>
+									</div>
+									<p>Note: <br>
+										1. Both the regions have similar shapes <br>
+										2. It is evident that each feature point in the left image is mapped to a nearby point in the right image <br>
+										3. The red patch (points matched) has a characteristic shape: e.g. 1) notice the holes left at some places where the points
+										are not invariant, those are not matched; 2) notice that the red patch keeps its shape according to the lines in the map
+										behind the baby (possible reason being that corner points in the map tend to be invariant points). Thus it can be seen that the
+										algorithm (although naïve) does its job of matching thousands of key points which will be used for triangulation at the end (depth estimation).</p>
+
+									<p>Because the built-in functions in OpenCV did not have Python bindings, I programmed the whole algorithm from scratch. I used Object Oriented Programming
+									knowledge gained from courses at CMU and from online MOOCs to reduce the programming complexity in my implementation. As an example,
+									I built a keyPair class to store matched keypoints efficiently and used Heap memory for swift sorting:</p>
+
+									<pre><code>
+class keyPair():
+	def __init__(self, kp1, kp2, image_1, image_2, window_size, entry_count):
+		'''
+		Initialiser for class keyPair
+
+		kp1         :co-ordinates of matched keypoint from 1st iamge
+		kp2         :co-ordinates of matched keypoints from 2nd image
+		image_1     :first image object (numpy array)
+		image_2     :second image object (numpy array)
+		window_size :for calculating zncc
+		entry_count :unique identifier for each 'keyPair' instance
+		'''
+
+		# take inputs as type int
+		self.u1, self.v1, self.u2, self.v2 = int(kp1[0]), int(kp1[1]), int(kp2[0]), int(kp2[1])
+		#--------------------------------#
+		assert self.u1 <= image_1.shape[0]
+		assert self.u2 <= image_1.shape[0]
+		assert self.v1 <= image_1.shape[1]
+		assert self.v2 <= image_1.shape[1]
+		#--------------------------------#
+		self.zncc = zncc(image_1, image_2, self.u1, self.v1, self.u2, self.v2, window_size)
+		# self.priority_score = 1.0 - self.zncc
+		self.window_size = window_size
+		self.entry_count = entry_count
+
+	def __lt__(self, other):
+		'''
+		Sorting rule for instances of class 'keyPair'
+		'''
+		# ~ smallest element in heap will have highest zncc
+		# return self.priority_score < other.priority_score
+		return self.zncc > other.zncc
+
+	def __eq__(self, other):
+		'''
+		Tie breaker
+		'''
+		return (self.entry_count == other.entry_count).all()
+
+	def __str__(self):
+		'''
+		Returns string representation of instance of class 'keyPair'
+		'''
+		ret_str = '\n--Keypair object consisting 2 matched image co-ordinates--\nEntry no.: ' + \
+		str(self.entry_count) + '\n' + 'Window size: ' + str(self.window_size) + '\n' + \
+		'keypoint 1: (' + str(self.u1) + ',  ' + str(self.v1) + ')\n' + 'keypoint 2: (' + \
+		str(self.u2) + ',  ' + str(self.v2) + ')\n' + 'zncc score: ' + str(self.zncc) + '\n'
+
+		return ret_str
+
+	def getKeypoints(self):
+		'''
+		Returns 2 numpy arrays containing matched co-ordinates from each image
+		'''
+		return [np.array([self.u1, self.v1]), np.array([self.u2, self.v2])]
+	</code></pre>
+
+									<hr class="major" />
+
+									<h2>Controller Programming for Autonomous Vehicles Simulation</h2>
+									<p>As a 5 parts project for 'Modern Control - Theory and Design', the aim was to implement theory
+										acquired in class in actual Python programs. While working on vehicle dynamics in simulations,
+										I learned to tune basic PID controller, using both the gains method and pole placement; discrete-time
+										infinite horizon LQR controller alongwith A* path planning to maneuver around obstacles and
+										Extended Kalman Filter Simultaneous Localization and Mapping (EKF SLAM) to filter observation noise.</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/a_star_3.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/a_star_2.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/a_star_1.png" alt="" /></span></div>
+										</div>
+									</div>
+									<p><i> <b>When competed against a class of ~65, my programmed car finished in top 8.</b> </i></p>
+									<p>Results of EKF SLAM:</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/ekf_1.png" alt="" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/ekf_2.png" alt="" /></span></div>
+										</div>
+									</div>
+									<p>For the closing part, I designed a Model Reference Adaptive Controller to study the
+										effect of sudden failure in the thrust of a quadrotor mid-air.</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/mrac.png" alt="" /></span></div>
+										</div>
+									</div>
+
+									<!-- <hr class="major" /> -->
+
+									<!-- <h2>Project 3</h2>
+									<p>[_]</p>
+									<p>[_]</p> -->
+
+								</section>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+
+							<!-- Search -->
+								<!-- <section id="search" class="alt">
+									<form method="post" action="#">
+										<input type="text" name="query" id="query" placeholder="Search" />
+									</form>
+								</section> -->
+
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="index.html">Homepage</a></li>
+										<li><a href="showcase.html">Showcase</a></li>
+										<li><a href="interests.html">Interests</a></li>
+										<!-- <li>
+											<span class="opener">Submenu</span>
+											<ul>
+												<li><a href="#">Lorem Dolor</a></li>
+												<li><a href="#">Ipsum Adipiscing</a></li>
+												<li><a href="#">Tempus Magna</a></li>
+												<li><a href="#">Feugiat Veroeros</a></li>
+											</ul>
+										</li>
+										<li><a href="#">Etiam Dolore</a></li>
+										<li><a href="#">Adipiscing</a></li>
+										<li>
+											<span class="opener">Another Submenu</span>
+											<ul>
+												<li><a href="#">Lorem Dolor</a></li>
+												<li><a href="#">Ipsum Adipiscing</a></li>
+												<li><a href="#">Tempus Magna</a></li>
+												<li><a href="#">Feugiat Veroeros</a></li>
+											</ul>
+										</li>
+										<li><a href="#">Maximus Erat</a></li>
+										<li><a href="#">Sapien Mauris</a></li>
+										<li><a href="#">Amet Lacinia</a></li> -->
+									</ul>
+								</nav>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Recent</h2>
+									</header>
+									<!-- <div class="mini-posts">
+										<article>
+											<a href="#" class="image"><img src="images/pic07.jpg" alt="" /></a>
+											<p>Something 1</p>
+										</article>
+										<article>
+											<a href="#" class="image"><img src="images/pic08.jpg" alt="" /></a>
+											<p>Something 2</p>
+										</article>
+										<article>
+											<a href="#" class="image"><img src="images/pic09.jpg" alt="" /></a>
+											<p>Something 3.</p>
+										</article>
+									</div> -->
+									<!-- <ul class="actions">
+										<li><a href="#" class="button">More</a></li>
+									</ul> -->
+								</section>
+
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<p></p>
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="mailto: ndjoshi@andrew.cmu.edu">ndjoshi@andrew.cmu.edu</a></li>
+										<li class="icon solid fa-phone">(412) 954-8693</li>
+										<!-- <li class="icon solid fa-home">1234 Somewhere Road #8254<br />
+										Nashville, TN 00000-0000</li> -->
+									</ul>
+								</section>
+
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
