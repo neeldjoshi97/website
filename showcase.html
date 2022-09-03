@@ -43,6 +43,23 @@
 									<p>Here are some of the projects I love to share with folks:</p>
 									<!-- <p>[_]</p>
 									<p>[_]</p> -->
+									
+									<hr class='major' />
+									<h2>Error State Extended Kalman Filter using Observations from CARLA Simulator</h2>
+									<p>I coded an Error State Extended Kalman Filter from scratch and tested it on observations (IMU, GNSS and LIDAR) generated using the CARLA Simulator.
+									</p>
+									<div class="box alt">
+										<div class="row gtr-50 gtr-uniform">
+											<div class="col-4"><span class="image fit"><img src="images/slam_ref.png" alt="dt" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/slam_tuned.png" alt="dt" /></span></div>
+											<div class="col-4"><span class="image fit"><img src="images/slam_params.png" alt="dt" /></span></div>
+										</div>
+									</div>
+									<p>
+										The filter was tuned within 3 sigma limits for 2 adversarial scenarios:
+										<br>1. The calibration between the car and the LIDAR sensor frame is miscalculated
+										<br>2. Some portion of the trajectory estimation has poor/no GNSS signal e.g. during a tunnel
+										</p>
 
 									<hr class="major" />
 									<h2>Human Activity Recognition (HAR) using Deep Learning</h2>
