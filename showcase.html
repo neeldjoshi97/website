@@ -132,13 +132,12 @@
 									<hr class="major" />
 									<h2>Feature Matching in Stereo Images using Quasi Dense Feature Propagation Algorithm</h2>
 									<p>This was implemented as the final project for the class 'Computer Vision for Engineers'.
-										We worked as a team of 4 classmates. We implemented the entire process in parts, each member
-										being responsible for one. The final Python script integrates the individual parts of the
+										We worked as a team of 4 classmates. The final Python script integrates the individual parts of the
 										process such that the input of multiple 2D images is processed to output 3D point co-ordinates
-										in Polygon File Format which can be imported into any 3D rendering software.</p>
+										in <b>Polygon File Format</b> which can be imported into any 3D rendering software.</p>
 									<p>In case of many images of an object, it becomes difficult to find perfect (seed/sparse)
 										keypoints (e.g. SIFT, SURF) which are present in all/most of the images at once. My part was
-										concerned about implementing Quasi Dense Matching which uses certain conditions to find out
+										concerned about implementing <b>Quasi Dense Matching</b> which uses certain conditions to find out
 										neighbouring points of seed keypoints which can be used for triangulation (estimating correct 3D co-ordinates).</p>
 									<p>Using the standard Baby image, if one finds the SIFT feature matches in the left and the right image
 										(stereo pair) and locate arbitrarily 2 of them like shown (bright red spots):</p>
@@ -148,7 +147,7 @@
 											<div class="col-4"><span class="image fit"><img src="images/baby_right.png" alt="" /></span></div>
 										</div>
 									</div>
-									<p>Now after implementing the feature search algorithm, these are all the possible matches one gets with ZNCC threshold of 0.99999:</p>
+									<p>Now after implementing the feature search algorithm, these are all the possible matches one gets with <b>ZNCC</b> threshold of 0.99999:</p>
 									<div class="box alt">
 										<div class="row gtr-50 gtr-uniform">
 											<div class="col-4"><span class="image fit"><img src="images/baby_left_matched.png" alt="" /></span></div>
