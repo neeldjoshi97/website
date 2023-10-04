@@ -188,61 +188,16 @@
 
 									<pre><code>
 class keyPair():
-	def __init__(self, kp1, kp2, image_1, image_2, window_size, entry_count):
-		'''
-		Initialiser for class keyPair
+	def __init__(...):
+		
+	def __lt__(...):
 
-		kp1         :co-ordinates of matched keypoint from 1st iamge
-		kp2         :co-ordinates of matched keypoints from 2nd image
-		image_1     :first image object (numpy array)
-		image_2     :second image object (numpy array)
-		window_size :for calculating zncc
-		entry_count :unique identifier for each 'keyPair' instance
-		'''
+	def __eq__(...):
+		
+	def __str__(...):
 
-		# take inputs as type int
-		self.u1, self.v1, self.u2, self.v2 = int(kp1[0]), int(kp1[1]), int(kp2[0]), int(kp2[1])
-		#--------------------------------#
-		assert self.u1 <= image_1.shape[0]
-		assert self.u2 <= image_1.shape[0]
-		assert self.v1 <= image_1.shape[1]
-		assert self.v2 <= image_1.shape[1]
-		#--------------------------------#
-		self.zncc = zncc(image_1, image_2, self.u1, self.v1, self.u2, self.v2, window_size)
-		# self.priority_score = 1.0 - self.zncc
-		self.window_size = window_size
-		self.entry_count = entry_count
-
-	def __lt__(self, other):
-		'''
-		Sorting rule for instances of class 'keyPair'
-		'''
-		# ~ smallest element in heap will have highest zncc
-		# return self.priority_score < other.priority_score
-		return self.zncc > other.zncc
-
-	def __eq__(self, other):
-		'''
-		Tie breaker
-		'''
-		return (self.entry_count == other.entry_count).all()
-
-	def __str__(self):
-		'''
-		Returns string representation of instance of class 'keyPair'
-		'''
-		ret_str = '\n--Keypair object consisting 2 matched image co-ordinates--\nEntry no.: ' + \
-		str(self.entry_count) + '\n' + 'Window size: ' + str(self.window_size) + '\n' + \
-		'keypoint 1: (' + str(self.u1) + ',  ' + str(self.v1) + ')\n' + 'keypoint 2: (' + \
-		str(self.u2) + ',  ' + str(self.v2) + ')\n' + 'zncc score: ' + str(self.zncc) + '\n'
-
-		return ret_str
-
-	def getKeypoints(self):
-		'''
-		Returns 2 numpy arrays containing matched co-ordinates from each image
-		'''
-		return [np.array([self.u1, self.v1]), np.array([self.u2, self.v2])]
+	def getKeypoints(...):
+		
 	</code></pre>
 
 									<hr class="major" />
