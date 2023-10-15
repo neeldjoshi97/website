@@ -1215,6 +1215,7 @@ input[type="radio"] + label:before {
   border-radius: 0.375em;
   border: 0;
   display: inline-block;
+  pointer-events: none; /* disables all open image in new tab things */
   position: relative; }
   .image img {
     border-radius: 0.375em;
