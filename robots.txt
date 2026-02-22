@@ -1,0 +1,15 @@
+# Apply to all crawlers
+User-agent: *
+Disallow: /
+
+# Explicitly block Googlebot
+User-agent: Googlebot
+Disallow: /
+
+# Explicitly block GPTBot (used by OpenAI)
+User-agent: GPTBot
+Disallow: /
+
+# Explicitly block CCBot (used by Common Crawl)
+User-agent: CCBot
+Disallow: /
